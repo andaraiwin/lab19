@@ -3,6 +3,7 @@
 #include<vector>
 #include<string>
 #include<cstdlib>
+#include <cstring>
 
 using namespace std;
 
@@ -20,20 +21,73 @@ string toUpperStr(string x){
     return y;
 }
 
-void importDataFromFile(){
+void importDataFromFile(string file, vector<string> &names, vector<int> &points, vector<char> &grades){
+    ifstream source(file);
+    string line;
+    do {
 
+        getline(source, line);
+
+        if (!line.size()) break;
+
+        char name[30] = {};
+        int scores[3] = {}, sum = 0;
+        sscanf(line.c_str(), "%[^:]", name);
+        sscanf(line.c_str()+strlen(name)+2, "%d %d %d", scores, scores+1, scores+2);
+        for (int i = 0;i < 3; ++i){ 
+            sum += scores[i];
+        }
+
+        names.push_back(string(name));
+        points.push_back(sum);
+        grades.push_back(score2grade(sum));
+    } while(line.size());
+
+    source.close();
 }
 
-void getCommand(){
+void getCommand(string &s1, string &s2){
+    string command;
 
+    cout << "Please input your command: ";
+    getline(cin, command);
+
+    unsigned int i, j = 0;
+    for (i = 0; i < command.size(); ++i){
+        if (command[i] == ' ') {
+            command[i] = '\0';
+            j = i + 1;
+            break;
+        }
+    }
+    s1 = string(&command[0]);
+    if (j) s2 = string(&command[j]);
 }
 
-void searchName(){
+void searchName(const vector<string> &names, const vector<int> &points, const vector<char> &grades, const string x){
+    cout << "---------------------------------\n";
 
+    bool f = false;
+    for (unsigned int i = 0; i < names.size(); ++i){
+        if (toUpperStr(names[i]) == x) {
+            cout << names[i] << "'s score = " << points[i] << "\n";
+            cout << names[i] << "'s grade = " << grades[i] << "\n";
+            f = true;
+        }
+    }
+    if (!f) cout << "Cannot found." << "\n";
+    cout << "---------------------------------\n";
 }
 
-void searchGrade(){
+void searchGrade(const vector<string> &names, const vector<int> &points, const vector<char> &grades, const string x){
+    cout << "---------------------------------\n";
 
+    for (unsigned int i = 0; i < grades.size(); ++i){
+        if (grades[i] == x[0]) {
+            cout << names[i] << " (" << points[i] << ")\n";
+        }
+    }
+    cout << "---------------------------------\n";
 }
 
 
